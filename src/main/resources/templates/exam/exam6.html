@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+<title th:text="${title}">thymeleaf 링크표현</title>
+</head>
+<body>
+    <h1>thymeleaf 링크표현</h1>
+    - 구문 @{주소}<br>
+    - ex: th:href="@{/exam/exam6}"<br>
+    - th:href, th:src 등등 <br>
+    - 주의할 점 th:href="@{exam/exam6}" 루트 / 유의할 것. 누락 시 상대경로가 된다.<br>
+
+    <ul th:object="${memberInfo}">
+        <li>
+            <a th:href="@{https://www.thymeleaf.org}">타임리프 공식사이트</a>
+        </li>
+        <li>
+            <!-- 잘못된 표기방법 -->
+            <a href="@{https://www.thymeleaf.org}">타임리프 공식사이트</a>
+        </li>
+        <!-- 쿼리스트링 표현방법 -->
+        <li>
+            <!-- /member/detail?memberId=id001&memberPw-pw001 -->
+            <a th:href="@{/exam/detail(memberId=*{memberId}, memberPw=*{memberPw})}">회원 정보조회</a>
+        </li>
+        <li>
+            <!-- /member/detail?memberId=id001&memberPw-pw001 -->
+            <a th:href="@{/exam/api(memberId=*{memberId}, memberPw=*{memberPw})}">회원 정보조회</a>
+        </li>
+        <!-- Rest API 주소 자원, 행동 -->
+        <!-- 자원 : 주소 -->
+        <!-- 행동 : http 주소요청 method -->
+        <!-- GET : select 특정 자원 조회 -->
+        <!-- POST : insert 특정 자원 삽입 -->
+        <!-- PUT : update 특정 자원 수정 -->
+        <!-- DELETE : delete 특정 자원 삭제 -->
+        <!-- /member/id001 -->
+        <li>
+            <a th:href="@{|/member/*{memberId}|}">id002 회원정보 조회</a>
+        </li>
+        <li>
+            <!-- th:href="@{/주소/자원을 가리키는 변수명(변수명=${값} or 변수명=*{값})}" -->
+            <a th:href="@{/member/{id}(id=*{memberId})}">id002 회원정보 조회</a>
+        </li>
+    </ul>
+</body>
+</html>

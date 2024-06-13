@@ -19,6 +19,34 @@ public class ExamService {
         System.out.println("객체생성");
     }
 
+    /**
+     * 회원정보조회
+     * @return Member
+     */
+    public Member getMemberInfo() {
+        return new Member("id002", "pw002", "홍02", "판매자", "010-2222-2222");
+    }
+
+    /**
+     * id로 회원정보 조회
+     * @param memberId
+     * @return Member
+     */
+    public Member getMemberInfoById(String memberId) {
+        String[] level = new String[] {"관리자", "판매자", "구매자"};
+        int i = Integer.parseInt(memberId.substring(2));
+        String mobilePattern = ""+i+i+i+i;
+        String memberPw = "pw"+String.format("%03d", i);
+        String memberName = "홍" + String.format("%02d", i);
+        String memberLevel = level[(i-1)%level.length];
+        String memberMobile = "010-" + mobilePattern + "-" + mobilePattern;
+        return new Member(memberId, memberPw, memberName, memberLevel, memberMobile);
+    }
+
+    /**
+     * 회원목록 조회
+     * @return List<Member>
+     */
     public static List<Member> getMemberList(){
         // Member id001~id009 arrayList 만들어보세요.
         // id001 관리자 id002 판매자 id003 구매자

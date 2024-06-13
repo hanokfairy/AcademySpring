@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${title}">ajax 실습</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/table.css}">
+</head>
+<body>
+<h1>ajax 실습</h1>
+<button type="button" id="listBtn">전체 회원조회</button><br><br>
+<input type="text" id="memberId" name="memberId" placeholder="검색할 아이디를 입력해주세요" />
+<button type="button" id="searchBtn">회원조회</button><br><br>
+<table>
+    <thead>
+    <tr>
+        <th>회원아이디</th>
+        <th>회원비밀번호</th>
+        <th>회원등급</th>
+        <th>회원이름</th>
+        <th>회원연락처</th>
+    </tr>
+    </thead>
+    <tbody id="tBody">
+
+    </tbody>
+</table>
+<script>
+    const request = {
+        get(url) {
+            return fetch(url)
+                .then(response => response.json());
+        },
+        post(url, option){
+            return fetch(url, option)
+                .then(response => response.json());
+        }
+    }
+    const $tbody = document.querySelector('#tBody');
+    const $listBtn = document.querySelector('#listBtn');
+    $listBtn.addEventListener('click', e => {
+        request.get('/member/list')
+            .then(list => {
+                $tbody.replaceChildren();
+                const domFragment = document.createDocumentFragment();
+                const memberList = list.map(memberInfo => {
+                    const memberId = memberInfo.memberId;
+                    const memberPw = memberInfo.memberPw;
+                    const memberLevel = memberInfo.memberLevel;
+                    const memberName = memberInfo.memberName;
+                    const memberMobile = memberInfo.memberMobile;
+                    return {memberId, memberPw, memberLevel, memberName, memberMobile}
+                });
+                memberList.forEach(memberInfo => {
+                    console.log(memberInfo);
+                    const $tr = document.createElement('tr');
+                    for(const key in memberInfo){
+                        const $td = document.createElement('td');
+                        $td.textContent = memberInfo[key];
+                        $tr.append($td);
+                    }
+                    domFragment.append($tr);
+                });
+                $tbody.append(domFragment);
+            })
+            .catch(error => console.log(error));
+    });
+
+    const $searchBtn = document.querySelector('#searchBtn');
+    $searchBtn.addEventListener('click', e => {
+        const $memberId = document.querySelector('#memberId');
+        const value = $memberId.value;
+        if(!value) {
+            alert('검색할 아이디를 입력해주세요');
+            $memberId.focus();
+            return ;
+        }
+        const option = {
+            method : 'POST',
+            headers : {
+                'Content-Type' : 'application/json'
+            },
+            body : JSON.stringify({
+                'memberId' : value
+            })
+        }
+        request.post('/member/searchId', option)
+            .then(memberInfo => {
+                $tbody.replaceChildren();
+                console.log(memberInfo);
+
+                if(memberInfo == null) return ;
+                const memberId = memberInfo.memberId;
+                const memberPw = memberInfo.memberPw;
+                const memberLevel = memberInfo.memberLevel;
+                const memberName = memberInfo.memberName;
+                const memberMobile = memberInfo.memberMobile;
+                const parseObj = {memberId, memberPw, memberLevel, memberName, memberMobile};
+                $tbody.replaceChildren();
+                const $tr = document.createElement('tr');
+                for(const key in parseObj){
+                    const $td = document.createElement('td');
+                    $td.textContent = parseObj[key];
+                    $tr.append($td);
+                }
+                $tbody.append($tr);
+            })
+            .catch(error => console.log(error));
+    })
+    // $(document).ready(function() {
+    //     $('#listBtn').click(function() {
+    //         $.ajax({
+    //             url: '/member/list',
+    //             method: 'GET',
+    //             dataType: 'json',
+    //             success: function(data) {
+    //                 const tBody = $('#tBody');
+    //                 tBody.empty();
+    //                 data.forEach(member => {
+    //                     const row = `<tr>
+    //                             <td>${member.memberId}</td>
+    //                             <td>${member.memberPw}</td>
+    //                             <td>${member.memberLevel}</td>
+    //                             <td>${member.memberName}</td>
+    //                             <td>${member.memberMobile}</td>
+    //                         </tr>`;
+    //                     tBody.append(row);
+    //                 });
+    //             },
+    //             error: function(error) {
+    //                 console.error('Error:', error);
+    //             }
+    //         });
+    //     });
+    //
+    //     $('#searchBtn').click(function() {
+    //         const memberId = $('#memberId').val();
+    //         $.ajax({
+    //             url: `/member/${memberId}`,
+    //             method: 'GET',
+    //             dataType: 'json',
+    //             success: function(member) {
+    //                 const tBody = $('#tBody');
+    //                 tBody.empty();
+    //                 const row = `<tr>
+    //                         <td>${member.memberId}</td>
+    //                         <td>${member.memberPw}</td>
+    //                         <td>${member.memberLevel}</td>
+    //                         <td>${member.memberName}</td>
+    //                         <td>${member.memberMobile}</td>
+    //                     </tr>`;
+    //                 tBody.append(row);
+    //             },
+    //             error: function(error) {
+    //                 console.error('Error:', error);
+    //             }
+    //         });
+    //     });
+    // });
+</script>
+</body>
+</html>
